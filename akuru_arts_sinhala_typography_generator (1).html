@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="si" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Akuru Arts — Sinhala Typography & Text Design Generator</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Import Google Fonts including authentic Sinhala families & UI font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@400;500;600;700;800&family=Gemunu+Libre:wght@200..800&family=Inter:wght@400;500;600;700&family=Maname&family=Noto+Sans+Sinhala:wdth,wght@62.5..100,100..900&family=Noto+Serif+Sinhala:wght@100..900&family=Stick+No+Bills:wght@200..800&family=Yaldevi:wght@200..700&family=Yrsa:ital,wght@0,300..700;1,300..700&display=swap"
+    rel="stylesheet"
+  />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans Sinhala', 'sans-serif'],
+            sinhala: ['Noto Sans Sinhala', 'Abhaya Libre', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Map 'Post No Bills Colombo' & 'Anek Sinhala' aliases to authentic Sinhala fonts */
+    @font-face {
+      font-family: 'Post No Bills Colombo';
+      src: local('Stick No Bills'), local('Post No Bills Colombo');
+      font-weight: 200 800;
+      font-display: swap;
+    }
+
+    /* CSS Checkerboard Patterns for the Canvas Wrapper ONLY (Canvas bitmap remains 100% transparent) */
+    .checkerboard-dark {
+      background-color: #0f172a;
+      background-image:
+        linear-gradient(45deg, #1e293b 25%, transparent 25%),
+        linear-gradient(-45deg, #1e293b 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1e293b 75%),
+        linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+      background-size: 22px 22px;
+      background-position: 0 0, 0 11px, 11px -11px, -11px 0;
+    }
+
+    .checkerboard-light {
+      background-color: #e2e8f0;
+      background-image:
+        linear-gradient(45deg, #cbd5e1 25%, transparent 25%),
+        linear-gradient(-45deg, #cbd5e1 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #cbd5e1 75%),
+        linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);
+      background-size: 22px 22px;
+      background-position: 0 0, 0 11px, 11px -11px, -11px 0;
+    }
+
+    .backdrop-midnight {
+      background: radial-gradient(circle at center, #1e1b4b 0%, #090d16 100%);
+    }
+
+    /* Custom Range Sliders */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 9999px;
+      background: #334155;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 18px;
+      width: 18px;
+      border-radius: 9999px;
+      background: #fbbf24;
+      border: 2px solid #0f172a;
+      margin-top: -6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      background: #38bdf8;
+    }
+
+    /* Custom Color Input Styling */
+    input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      background: transparent;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+    input[type="color"]::-webkit-color-swatch {
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-radius: 0.5rem;
+    }
+
+    /* Subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-amber-400 selection:text-slate-950">
+
+  <!-- Hidden font preloader node to warm up all Sinhala font families in the browser -->
+  <div aria-hidden="true" class="fixed -top-96 -left-96 opacity-0 pointer-events-none select-none">
+    <span style="font-family: 'Abhaya Libre'; font-weight: 700;">අකුරු ආට්ස්</span>
+    <span style="font-family: 'Gemunu Libre'; font-weight: 700;">අකුරු ආට්ස්</span>
+    <span style="font-family: 'Noto Sans Sinhala'; font-weight: 700;">අකුරු ආට්ස්</span>
+    <span style="font-family: 'Noto Serif Sinhala'; font-weight: 700;">අකුරු ආට්ස්</span>
+    <span style="font-family: 'Stick No Bills'; font-weight: 700;">අකුරු ආට්ස්</span>
+    <span style="font-family: 'Yaldevi'; font-weight: 700;">අකුරු ආට්ස්</span>
+    <span style="font-family: 'Maname'; font-weight: 400;">අකුරු ආට්ස්</span>
+    <span style="font-family: 'Yrsa'; font-weight: 600;">අකුරු ආට්ස්</span>
+  </div>
+
+  <!-- Sleek Compact Header -->
+  <header class="border-b border-slate-800/90 bg-slate-900/95 backdrop-blur-md z-40">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950 font-extrabold text-lg">
+          අ
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-bold tracking-tight bg-gradient-to-r from-white via-amber-200 to-cyan-400 bg-clip-text text-transparent">
+              Akuru Arts
+            </h1>
+            <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+              සිංහල අකුරු කලා
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 hidden sm:block">
+            Sinhala Typography &amp; Transparent PNG Sticker / Bus Art Text Generator
+          </p>
+        </div>
+      </div>
+
+      <!-- Font Status & Reset -->
+      <div class="flex items-center gap-2">
+        <div id="fontStatusBadge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/90 border border-slate-700 text-[11px] text-slate-300">
+          <span id="fontStatusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span id="fontStatusText">Loading Fonts...</span>
+        </div>
+
+        <button
+          id="resetBtn"
+          type="button"
+          class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition flex items-center gap-1"
+          title="Reset all settings to default"
+        >
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Reset</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- 1. TOP STICKY LIVE CANVAS PREVIEW SECTION (Always visible at the top!)    -->
+  <!-- ========================================================================= -->
+  <section
+    id="topPreviewSection"
+    class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800 shadow-2xl transition-all duration-200"
+  >
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5">
+      <div class="bg-slate-900/95 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+
+        <!-- Top Preview Control Bar -->
+        <div class="px-3 sm:px-4 py-2 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 bg-slate-900">
+          <!-- Left: Live Indicator + Pin Toggle + Resolution -->
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="text-xs sm:text-sm font-bold text-white tracking-wide">
+                LIVE CANVAS PREVIEW
+              </span>
+            </div>
+
+            <!-- Pin / Unpin Top Preview Button -->
+            <button
+              id="togglePinBtn"
+              type="button"
+              class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/25 transition flex items-center gap-1"
+              title="Pin or unpin preview at the top while scrolling"
+            >
+              <span id="pinIcon">📌</span>
+              <span id="pinText">Pinned at Top</span>
+            </button>
+
+            <!-- Canvas Resolution Selector -->
+            <select
+              id="canvasSizeSelect"
+              aria-label="Canvas Resolution"
+              class="rounded-lg bg-slate-950 border border-slate-700 text-slate-200 px-2 py-1 text-[11px] font-mono outline-none cursor-pointer"
+            >
+              <option value="1200x500" selected>Banner (1200×500)</option>
+              <option value="1200x675">HD 16:9 (1200×675)</option>
+              <option value="1920x1080">Full HD (1920×1080)</option>
+              <option value="1080x1080">Square (1080×1080)</option>
+            </select>
+          </div>
+
+          <!-- Right: Checkerboard Switcher + Auto-Trim + Prominent Download PNG Button -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- CSS Backdrop Switcher (Visual only — never affects transparent PNG) -->
+            <div class="flex items-center gap-1 bg-slate-950 p-0.5 rounded-lg border border-slate-800">
+              <button
+                type="button"
+                data-backdrop="checkerboard-dark"
+                class="backdrop-btn px-2 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-amber-300 transition"
+                title="Dark Transparency Checkerboard"
+              >
+                Dark Grid
+              </button>
+              <button
+                type="button"
+                data-backdrop="checkerboard-light"
+                class="backdrop-btn px-2 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-white transition"
+                title="Light Transparency Checkerboard"
+              >
+                Light Grid
+              </button>
+              <button
+                type="button"
+                data-backdrop="backdrop-midnight"
+                class="backdrop-btn px-2 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-white transition"
+                title="Midnight Contrast Backdrop"
+              >
+                Night
+              </button>
+            </div>
+
+            <!-- Auto-Trim Transparent Space Checkbox -->
+            <label class="inline-flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-300 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
+              <input
+                id="trimWhitespaceToggle"
+                type="checkbox"
+                checked
+                class="rounded bg-slate-900 border-slate-700 text-amber-500 focus:ring-amber-500/20"
+              />
+              <span>Auto-Trim</span>
+            </label>
+
+            <!-- 8. Prominent Download PNG Button -->
+            <button
+              id="downloadBtnTop"
+              type="button"
+              class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/25 active:scale-95 transition flex items-center gap-1.5"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span>Download PNG</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Live HTML5 Canvas Viewport Wrapper -->
+        <!-- IMPORTANT: Checkerboard is on this wrapper div; the <canvas> bitmap is 100% transparent -->
+        <div
+          id="canvasBackdropWrapper"
+          class="checkerboard-dark relative w-full h-[170px] sm:h-[230px] md:h-[260px] flex items-center justify-center p-2 sm:p-4 overflow-hidden transition-all"
+        >
+          <canvas
+            id="typographyCanvas"
+            width="1200"
+            height="500"
+            class="w-full h-full object-contain rounded-lg"
+          ></canvas>
+
+          <!-- Bottom-left Transparent Status Pill -->
+          <div class="absolute bottom-2 left-2.5 pointer-events-none flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-950/80 backdrop-blur-sm border border-slate-800 text-[10px] text-slate-300">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            <span id="canvasResolutionBadge">100% Transparent PNG • 1200×500</span>
+          </div>
+        </div>
+
+        <!-- Quick One-Click Bus Art / Sticker Style Presets Bar -->
+        <div class="px-3 sm:px-4 py-2 bg-slate-900/95 border-t border-slate-800/90 flex items-center gap-2 overflow-x-auto">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 shrink-0">
+            🚌 Quick Styles:
+          </span>
+          <button type="button" data-preset="maharajaBus" class="preset-btn shrink-0 px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-slate-800 border border-amber-500/40 text-[11px] font-semibold text-amber-300 transition">
+            👑 මහරාජා Gold
+          </button>
+          <button type="button" data-preset="stickerPop" class="preset-btn shrink-0 px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-slate-800 border border-rose-500/40 text-[11px] font-semibold text-rose-300 transition">
+            🏷️ Sticker Pop
+          </button>
+          <button type="button" data-preset="neonCyber" class="preset-btn shrink-0 px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-slate-800 border border-cyan-500/40 text-[11px] font-semibold text-cyan-300 transition">
+            ⚡ Cyber Neon
+          </button>
+          <button type="button" data-preset="leylandFire" class="preset-btn shrink-0 px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-slate-800 border border-orange-500/40 text-[11px] font-semibold text-orange-300 transition">
+            🔥 Leyland Fire
+          </button>
+          <button type="button" data-preset="emeraldGlow" class="preset-btn shrink-0 px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-slate-800 border border-emerald-500/40 text-[11px] font-semibold text-emerald-300 transition">
+            🌿 Emerald Glow
+          </button>
+          <button type="button" data-preset="classicWhite" class="preset-btn shrink-0 px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-700 text-[11px] font-semibold text-slate-200 transition">
+            ✒️ Classic White
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- CONTROLS GRID BELOW THE TOP CANVAS PREVIEW                                -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start">
+
+      <!-- CARD 1: Sinhala Text Input & Quick Phrase Chips -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+        <div class="flex items-center justify-between">
+          <label for="textInput" class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            1. Sinhala Text Input (සිංහල පෙළ)
+          </label>
+          <button
+            id="clearTextBtn"
+            type="button"
+            class="text-xs text-slate-400 hover:text-rose-400 transition font-medium"
+          >
+            Clear Text
+          </button>
+        </div>
+
+        <textarea
+          id="textInput"
+          rows="3"
+          placeholder="ඔබේ සිංහල වදන මෙහි ලියන්න..."
+          class="w-full rounded-xl bg-slate-950 border border-slate-700/80 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 text-slate-100 px-3.5 py-2.5 text-base sm:text-lg leading-relaxed outline-none transition resize-y font-sinhala"
+        >අකුරු ආට්ස්
+ශ්‍රී ලංකා</textarea>
+
+        <!-- Quick Sinhala Bus Art / Sticker Phrases -->
+        <div>
+          <span class="block text-[11px] text-slate-400 mb-2">Quick-Insert Sinhala Phrases:</span>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" data-phrase="මහරාජා" class="phrase-chip text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 transition font-sinhala">
+              මහරාජා
+            </button>
+            <button type="button" data-phrase="ශ්‍රී ලංකා" class="phrase-chip text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition font-sinhala">
+              ශ්‍රී ලංකා
+            </button>
+            <button type="button" data-phrase="සුභ ගමන්" class="phrase-chip text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition font-sinhala">
+              සුභ ගමන්
+            </button>
+            <button type="button" data-phrase="බුදු සරණයි" class="phrase-chip text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition font-sinhala">
+              බුදු සරණයි
+            </button>
+            <button type="button" data-phrase="අකුරු ආට්ස්&#10;ශ්‍රී ලංකා" class="phrase-chip text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition font-sinhala">
+              අකුරු ආට්ස්
+            </button>
+            <button type="button" data-phrase="සිහින මල් පිපෙනා" class="phrase-chip text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition font-sinhala">
+              සිහින මල් පිපෙනා
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2: Sinhala Font Selector, Size, Line Spacing & Alignment -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+        <div class="flex items-center justify-between">
+          <label for="fontSelector" class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+            2 &amp; 3. Font Family, Size &amp; Align
+          </label>
+          <span class="text-[11px] text-cyan-400 font-medium">12 Sinhala Fonts</span>
+        </div>
+
+        <!-- Dropdown with 12 Sinhala Font Styles -->
+        <div>
+          <label for="fontSelector" class="block text-xs text-slate-300 font-medium mb-1">Sinhala Font (අකුරු මුහුණත)</label>
+          <select
+            id="fontSelector"
+            class="w-full rounded-xl bg-slate-950 border border-slate-700/80 focus:border-amber-400 text-slate-100 px-3 py-2.5 text-sm outline-none transition cursor-pointer"
+          >
+            <option value="'Abhaya Libre', serif" data-weight="800">1. Abhaya Libre ExtraBold — අභය ලිබ්රේ</option>
+            <option value="'Gemunu Libre', sans-serif" data-weight="800">2. Gemunu Libre Bold — ගැමුණු ලිබ්රේ</option>
+            <option value="'Noto Sans Sinhala', sans-serif" data-weight="800">3. Noto Sans Sinhala — නොටෝ සෑන්ස්</option>
+            <option value="'Noto Serif Sinhala', serif" data-weight="800">4. Noto Serif Sinhala — නොටෝ සෙරිෆ්</option>
+            <option value="'Stick No Bills', 'Post No Bills Colombo', sans-serif" data-weight="800">5. Post No Bills Colombo — ස්ටෙන්සිල්</option>
+            <option value="'Yaldevi', sans-serif" data-weight="700">6. Yaldevi Colombo — යාල්දේවි</option>
+            <option value="'Anek Sinhala', 'Noto Sans Sinhala', sans-serif" data-weight="700" data-condensed="true">7. Anek Sinhala — අනෙක් සිංහල</option>
+            <option value="'Maname', serif" data-weight="400">8. Maname — මනමේ සම්ප්‍රදායික</option>
+            <option value="'Yrsa', 'Noto Serif Sinhala', serif" data-weight="700">9. Yrsa + Sinhala Serif — යර්සා</option>
+            <option value="'Iskoola Pota', 'Abhaya Libre', serif" data-weight="700">10. Iskoola Pota — ඉස්කෝල පොත</option>
+            <option value="'Abhaya Libre', serif" data-weight="400">11. Abhaya Libre Regular — අභය සාමාන්‍ය</option>
+            <option value="'Gemunu Libre', sans-serif" data-weight="400">12. Gemunu Libre Light — ගැමුණු සිහින්</option>
+          </select>
+        </div>
+
+        <!-- Bold / Italic Toggles & Alignment Row -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <span class="block text-xs text-slate-300 font-medium mb-1">Style Toggles</span>
+            <div class="grid grid-cols-2 gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-700/80">
+              <button
+                id="boldToggleBtn"
+                type="button"
+                class="py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition"
+                title="Toggle Bold"
+              >
+                B Bold
+              </button>
+              <button
+                id="italicToggleBtn"
+                type="button"
+                class="py-1.5 rounded-lg text-xs italic font-medium text-slate-400 hover:text-white transition"
+                title="Toggle Italic"
+              >
+                I Italic
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <span class="block text-xs text-slate-300 font-medium mb-1">Text Alignment</span>
+            <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-700/80">
+              <button type="button" data-align="left" class="align-btn py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition flex justify-center items-center" title="Align Left">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14"/></svg>
+              </button>
+              <button type="button" data-align="center" class="align-btn py-1.5 rounded-lg text-xs font-medium bg-amber-500 text-slate-950 transition flex justify-center items-center" title="Align Center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M7 12h10M5 18h14"/></svg>
+              </button>
+              <button type="button" data-align="right" class="align-btn py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition flex justify-center items-center" title="Align Right">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M10 12h10M6 18h14"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Font Size Slider -->
+        <div class="space-y-1">
+          <div class="flex items-center justify-between">
+            <label for="fontSizeSlider" class="text-xs text-slate-300 font-medium">Font Size (අකුරු ප්‍රමාණය)</label>
+            <span id="fontSizeValue" class="text-xs font-mono font-semibold text-amber-400">110 px</span>
+          </div>
+          <input
+            id="fontSizeSlider"
+            type="range"
+            min="20"
+            max="220"
+            value="110"
+            class="w-full"
+          />
+        </div>
+
+        <!-- Line Spacing Slider -->
+        <div class="space-y-1">
+          <div class="flex items-center justify-between">
+            <label for="lineHeightSlider" class="text-xs text-slate-300 font-medium">Line Spacing (පේළි පරතරය)</label>
+            <span id="lineHeightValue" class="text-xs font-mono text-slate-400">1.20x</span>
+          </div>
+          <input
+            id="lineHeightSlider"
+            type="range"
+            min="0.85"
+            max="2.0"
+            step="0.05"
+            value="1.20"
+            class="w-full"
+          />
+        </div>
+      </div>
+
+      <!-- CARD 3: Text Color, 2-Tone Gradient, Outline & Shadow -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4 md:col-span-2 lg:col-span-1">
+
+        <!-- 4. Text Color & 2-Tone Gradient -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <label for="textColorPicker" class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+              </svg>
+              4. Text Color &amp; Gradient
+            </label>
+
+            <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs text-cyan-300 font-medium">
+              <input id="useGradientToggle" type="checkbox" checked class="rounded bg-slate-800 border-slate-700 text-amber-500 focus:ring-amber-500/20" />
+              <span>2-Tone Gradient</span>
+            </label>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <!-- Primary Fill -->
+            <div class="flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-xl p-2">
+              <input id="textColorPicker" type="color" value="#fde047" class="w-8 h-8 rounded-lg shrink-0" />
+              <div class="min-w-0">
+                <span class="block text-[10px] text-slate-400">Main Color</span>
+                <span id="textColorHex" class="text-xs font-mono font-semibold text-slate-200 uppercase">#FDE047</span>
+              </div>
+            </div>
+
+            <!-- Secondary Gradient Fill -->
+            <div id="gradientColorContainer" class="flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-xl p-2 transition">
+              <input id="textColorSecondaryPicker" type="color" value="#f97316" class="w-8 h-8 rounded-lg shrink-0" />
+              <div class="min-w-0">
+                <span class="block text-[10px] text-slate-400">Gradient 2nd</span>
+                <span id="textColorSecondaryHex" class="text-xs font-mono font-semibold text-slate-200 uppercase">#F97316</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Swatches + Gradient Angle -->
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5">
+              <button type="button" data-color="#ffffff" class="color-swatch w-5 h-5 rounded-full bg-white border border-slate-600 hover:scale-110 transition" title="White"></button>
+              <button type="button" data-color="#fde047" class="color-swatch w-5 h-5 rounded-full bg-yellow-300 border border-slate-600 hover:scale-110 transition" title="Gold"></button>
+              <button type="button" data-color="#38bdf8" class="color-swatch w-5 h-5 rounded-full bg-sky-400 border border-slate-600 hover:scale-110 transition" title="Cyan"></button>
+              <button type="button" data-color="#fb7185" class="color-swatch w-5 h-5 rounded-full bg-rose-400 border border-slate-600 hover:scale-110 transition" title="Rose"></button>
+              <button type="button" data-color="#34d399" class="color-swatch w-5 h-5 rounded-full bg-emerald-400 border border-slate-600 hover:scale-110 transition" title="Emerald"></button>
+              <button type="button" data-color="#c084fc" class="color-swatch w-5 h-5 rounded-full bg-purple-400 border border-slate-600 hover:scale-110 transition" title="Purple"></button>
+            </div>
+
+            <select
+              id="gradientDirectionSelect"
+              aria-label="Gradient Direction"
+              class="rounded-lg bg-slate-950 border border-slate-700 text-slate-300 px-2 py-1 text-[11px] outline-none cursor-pointer"
+            >
+              <option value="vertical" selected>↕ Top to Bottom</option>
+              <option value="horizontal">↔ Left to Right</option>
+              <option value="diagonal">↘ Diagonal</option>
+            </select>
+          </div>
+        </div>
+
+        <hr class="border-slate-800" />
+
+        <!-- 5. Text Border / Outline -->
+        <div class="space-y-2.5">
+          <label class="text-xs font-bold uppercase tracking-wider text-amber-400 block">
+            5. Text Border / Outline (වට රේඛාව)
+          </label>
+
+          <div class="grid grid-cols-12 gap-2.5 items-center">
+            <div class="col-span-5 flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-xl p-2">
+              <input id="strokeColorPicker" type="color" value="#451a03" class="w-8 h-8 rounded-lg shrink-0" />
+              <div class="min-w-0">
+                <span class="block text-[10px] text-slate-400">Outline</span>
+                <span id="strokeColorHex" class="text-xs font-mono font-semibold text-slate-200 uppercase">#451A03</span>
+              </div>
+            </div>
+
+            <div class="col-span-7 space-y-1">
+              <div class="flex items-center justify-between">
+                <label for="strokeWidthSlider" class="text-xs text-slate-300">Thickness</label>
+                <span id="strokeWidthValue" class="text-xs font-mono font-semibold text-amber-400">8 px</span>
+              </div>
+              <input id="strokeWidthSlider" type="range" min="0" max="30" step="0.5" value="8" class="w-full" />
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-slate-800" />
+
+        <!-- 6. Text Shadow -->
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold uppercase tracking-wider text-amber-400">
+              6. Text Shadow (සෙවණැල්ල)
+            </label>
+            <button id="zeroShadowBtn" type="button" class="text-[11px] text-slate-400 hover:text-amber-300 transition">
+              No Shadow
+            </button>
+          </div>
+
+          <div class="grid grid-cols-12 gap-2.5 items-center">
+            <div class="col-span-5 flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-xl p-2">
+              <input id="shadowColorPicker" type="color" value="#000000" class="w-8 h-8 rounded-lg shrink-0" />
+              <div class="min-w-0">
+                <span class="block text-[10px] text-slate-400">Shadow</span>
+                <span id="shadowColorHex" class="text-xs font-mono font-semibold text-slate-200 uppercase">#000000</span>
+              </div>
+            </div>
+
+            <div class="col-span-7 space-y-1">
+              <div class="flex items-center justify-between">
+                <label for="shadowBlurSlider" class="text-xs text-slate-300">Shadow Blur</label>
+                <span id="shadowBlurValue" class="text-xs font-mono font-semibold text-amber-400">16 px</span>
+              </div>
+              <input id="shadowBlurSlider" type="range" min="0" max="50" step="1" value="16" class="w-full" />
+            </div>
+          </div>
+
+          <!-- Offset X & Offset Y -->
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <div class="space-y-1">
+              <div class="flex items-center justify-between">
+                <label for="shadowOffsetXSlider" class="text-xs text-slate-300">Offset X</label>
+                <span id="shadowOffsetXValue" class="text-xs font-mono text-slate-400">4 px</span>
+              </div>
+              <input id="shadowOffsetXSlider" type="range" min="-50" max="50" step="1" value="4" class="w-full" />
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex items-center justify-between">
+                <label for="shadowOffsetYSlider" class="text-xs text-slate-300">Offset Y</label>
+                <span id="shadowOffsetYValue" class="text-xs font-mono text-slate-400">8 px</span>
+              </div>
+              <input id="shadowOffsetYSlider" type="range" min="-50" max="50" step="1" value="8" class="w-full" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Full-Width Download Button for Mobile Convenience -->
+        <button
+          id="downloadBtnBottom"
+          type="button"
+          class="w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-bold text-sm shadow-xl shadow-amber-500/20 active:scale-[0.99] transition flex items-center justify-center gap-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>Download Transparent PNG</span>
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Toast Notification Banner (No alert() used) -->
+  <div
+    id="toastMessage"
+    class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 border border-amber-500/40 text-slate-100 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3"
+  >
+    <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+      ✓
+    </div>
+    <div class="text-xs sm:text-sm font-medium" id="toastText">
+      Transparent PNG exported successfully!
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // DOM Elements
+      const canvas = document.getElementById('typographyCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const topPreviewSection = document.getElementById('topPreviewSection');
+      const togglePinBtn = document.getElementById('togglePinBtn');
+      const pinText = document.getElementById('pinText');
+
+      const textInput = document.getElementById('textInput');
+      const clearTextBtn = document.getElementById('clearTextBtn');
+      const fontSelector = document.getElementById('fontSelector');
+      const boldToggleBtn = document.getElementById('boldToggleBtn');
+      const italicToggleBtn = document.getElementById('italicToggleBtn');
+      const fontSizeSlider = document.getElementById('fontSizeSlider');
+      const fontSizeValue = document.getElementById('fontSizeValue');
+      const lineHeightSlider = document.getElementById('lineHeightSlider');
+      const lineHeightValue = document.getElementById('lineHeightValue');
+
+      const textColorPicker = document.getElementById('textColorPicker');
+      const textColorHex = document.getElementById('textColorHex');
+      const useGradientToggle = document.getElementById('useGradientToggle');
+      const gradientColorContainer = document.getElementById('gradientColorContainer');
+      const textColorSecondaryPicker = document.getElementById('textColorSecondaryPicker');
+      const textColorSecondaryHex = document.getElementById('textColorSecondaryHex');
+      const gradientDirectionSelect = document.getElementById('gradientDirectionSelect');
+
+      const strokeColorPicker = document.getElementById('strokeColorPicker');
+      const strokeColorHex = document.getElementById('strokeColorHex');
+      const strokeWidthSlider = document.getElementById('strokeWidthSlider');
+      const strokeWidthValue = document.getElementById('strokeWidthValue');
+
+      const shadowColorPicker = document.getElementById('shadowColorPicker');
+      const shadowColorHex = document.getElementById('shadowColorHex');
+      const shadowBlurSlider = document.getElementById('shadowBlurSlider');
+      const shadowBlurValue = document.getElementById('shadowBlurValue');
+      const shadowOffsetXSlider = document.getElementById('shadowOffsetXSlider');
+      const shadowOffsetXValue = document.getElementById('shadowOffsetXValue');
+      const shadowOffsetYSlider = document.getElementById('shadowOffsetYSlider');
+      const shadowOffsetYValue = document.getElementById('shadowOffsetYValue');
+      const zeroShadowBtn = document.getElementById('zeroShadowBtn');
+
+      const canvasSizeSelect = document.getElementById('canvasSizeSelect');
+      const canvasResolutionBadge = document.getElementById('canvasResolutionBadge');
+      const trimWhitespaceToggle = document.getElementById('trimWhitespaceToggle');
+      const canvasBackdropWrapper = document.getElementById('canvasBackdropWrapper');
+
+      const fontStatusDot = document.getElementById('fontStatusDot');
+      const fontStatusText = document.getElementById('fontStatusText');
+      const resetBtn = document.getElementById('resetBtn');
+      const downloadBtnTop = document.getElementById('downloadBtnTop');
+      const downloadBtnBottom = document.getElementById('downloadBtnBottom');
+
+      const toastMessage = document.getElementById('toastMessage');
+      const toastText = document.getElementById('toastText');
+
+      // Application State
+      const state = {
+        isPinned: true,
+        text: 'අකුරු ආට්ස්\nශ්‍රී ලංකා',
+        fontFamily: "'Abhaya Libre', serif",
+        fontWeight: '800',
+        isBold: true,
+        isItalic: false,
+        isCondensed: false,
+        fontSize: 110,
+        lineHeight: 1.2,
+        textAlign: 'center',
+        textColor: '#fde047',
+        useGradient: true,
+        textColorSecondary: '#f97316',
+        gradientDirection: 'vertical',
+        strokeColor: '#451a03',
+        strokeWidth: 8,
+        shadowColor: '#000000',
+        shadowBlur: 16,
+        shadowOffsetX: 4,
+        shadowOffsetY: 8
+      };
+
+      let toastTimer = null;
+      function showToast(message) {
+        toastText.textContent = message;
+        toastMessage.classList.remove('translate-y-20', 'opacity-0');
+        toastMessage.classList.add('translate-y-0', 'opacity-100');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toastMessage.classList.add('translate-y-20', 'opacity-0');
+          toastMessage.classList.remove('translate-y-0', 'opacity-100');
+        }, 3000);
+      }
+
+      /**
+       * Preloads Sinhala Google Fonts using document.fonts.load() and document.fonts.ready
+       * so the HTML5 Canvas never renders blank or fallback glyphs on initial load.
+       */
+      async function ensureFontsLoaded() {
+        try {
+          if (document.fonts && document.fonts.ready) {
+            const fontPromises = [
+              document.fonts.load("800 72px 'Abhaya Libre'", 'අකුරු ආට්ස්'),
+              document.fonts.load("800 72px 'Gemunu Libre'", 'අකුරු ආට්ස්'),
+              document.fonts.load("800 72px 'Noto Sans Sinhala'", 'අකුරු ආට්ස්'),
+              document.fonts.load("800 72px 'Noto Serif Sinhala'", 'අකුරු ආට්ස්'),
+              document.fonts.load("800 72px 'Stick No Bills'", 'අකුරු ආට්ස්'),
+              document.fonts.load("700 72px 'Yaldevi'", 'අකුරු ආට්ස්'),
+              document.fonts.load("400 72px 'Maname'", 'අකුරු ආට්ස්'),
+              document.fonts.load("700 72px 'Yrsa'", 'අකුරු ආට්ස්')
+            ];
+            await Promise.allSettled(fontPromises);
+            await document.fonts.ready;
+          }
+          fontStatusDot.classList.remove('bg-amber-400', 'animate-pulse');
+          fontStatusDot.classList.add('bg-emerald-400');
+          fontStatusText.textContent = 'Sinhala Fonts Ready';
+          renderCanvas();
+        } catch (err) {
+          fontStatusText.textContent = 'Fonts Ready';
+          renderCanvas();
+        }
+      }
+
+      /**
+       * Renders the Sinhala text onto the 100% transparent HTML5 Canvas.
+       */
+      function renderCanvas() {
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // 1. Clear the entire canvas bitmap so the background is 100% transparent
+        ctx.clearRect(0, 0, width, height);
+
+        const rawText = state.text || '';
+        if (!rawText.trim()) return;
+
+        const lines = rawText.split('\n');
+        const fontSize = Number(state.fontSize);
+        const lineHeightPx = fontSize * Number(state.lineHeight);
+        const totalTextHeight = lines.length * lineHeightPx;
+
+        ctx.save();
+
+        // Build CSS font specification
+        const italicStr = state.isItalic ? 'italic ' : '';
+        const stretchStr = state.isCondensed ? 'condensed ' : '';
+        const weightStr = state.isBold ? state.fontWeight : '400';
+        ctx.font = `${italicStr}${stretchStr}${weightStr} ${fontSize}px ${state.fontFamily}`;
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = state.textAlign;
+
+        // Determine horizontal anchor position
+        let anchorX = width / 2;
+        const horizontalPadding = Math.max(60, fontSize * 0.6);
+        if (state.textAlign === 'left') {
+          anchorX = horizontalPadding;
+        } else if (state.textAlign === 'right') {
+          anchorX = width - horizontalPadding;
+        }
+
+        // Vertically center the multiline text block
+        const startY = (height - totalTextHeight) / 2 + lineHeightPx / 2;
+
+        // Smooth rounded stroke joins for curved Sinhala characters
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.miterLimit = 2;
+
+        // Configure Fill Style (Solid or 2-Tone Gradient)
+        if (state.useGradient) {
+          const gradTop = (height - totalTextHeight) / 2;
+          const gradBottom = (height + totalTextHeight) / 2;
+          let gradient;
+          if (state.gradientDirection === 'horizontal') {
+            gradient = ctx.createLinearGradient(width * 0.2, 0, width * 0.8, 0);
+          } else if (state.gradientDirection === 'diagonal') {
+            gradient = ctx.createLinearGradient(width * 0.25, gradTop, width * 0.75, gradBottom);
+          } else {
+            gradient = ctx.createLinearGradient(0, gradTop, 0, gradBottom);
+          }
+          gradient.addColorStop(0, state.textColor);
+          gradient.addColorStop(1, state.textColorSecondary);
+          ctx.fillStyle = gradient;
+        } else {
+          ctx.fillStyle = state.textColor;
+        }
+
+        const hasStroke = Number(state.strokeWidth) > 0;
+        const hasShadow =
+          Number(state.shadowBlur) > 0 ||
+          Number(state.shadowOffsetX) !== 0 ||
+          Number(state.shadowOffsetY) !== 0;
+
+        lines.forEach((line, index) => {
+          const y = startY + index * lineHeightPx;
+
+          if (hasStroke) {
+            // Pass 1: Draw Shadow + Outer Stroke first
+            ctx.save();
+            if (hasShadow) {
+              ctx.shadowColor = state.shadowColor;
+              ctx.shadowBlur = Number(state.shadowBlur);
+              ctx.shadowOffsetX = Number(state.shadowOffsetX);
+              ctx.shadowOffsetY = Number(state.shadowOffsetY);
+            } else {
+              ctx.shadowColor = 'transparent';
+            }
+            ctx.strokeStyle = state.strokeColor;
+            ctx.lineWidth = Number(state.strokeWidth) * 2;
+            ctx.strokeText(line, anchorX, y);
+            ctx.restore();
+
+            // Pass 2: Draw crisp main fill over the inner half of the stroke
+            ctx.save();
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.fillText(line, anchorX, y);
+            ctx.restore();
+          } else {
+            // No outline: draw shadow directly on fillText
+            ctx.save();
+            if (hasShadow) {
+              ctx.shadowColor = state.shadowColor;
+              ctx.shadowBlur = Number(state.shadowBlur);
+              ctx.shadowOffsetX = Number(state.shadowOffsetX);
+              ctx.shadowOffsetY = Number(state.shadowOffsetY);
+            }
+            ctx.fillText(line, anchorX, y);
+            ctx.restore();
+          }
+        });
+
+        ctx.restore();
+      }
+
+      /**
+       * Crops empty transparent space around the rendered Sinhala text for clean sticker PNGs.
+       */
+      function getTrimmedCanvas(sourceCanvas) {
+        const w = sourceCanvas.width;
+        const h = sourceCanvas.height;
+        const imageData = ctx.getImageData(0, 0, w, h).data;
+
+        let top = h, left = w, right = 0, bottom = 0;
+        let foundPixel = false;
+
+        for (let y = 0; y < h; y++) {
+          for (let x = 0; x < w; x++) {
+            const alpha = imageData[(y * w + x) * 4 + 3];
+            if (alpha > 0) {
+              foundPixel = true;
+              if (x < left) left = x;
+              if (x > right) right = x;
+              if (y < top) top = y;
+              if (y > bottom) bottom = y;
+            }
+          }
+        }
+
+        if (!foundPixel) return sourceCanvas;
+
+        const padding = 24;
+        left = Math.max(0, left - padding);
+        top = Math.max(0, top - padding);
+        right = Math.min(w - 1, right + padding);
+        bottom = Math.min(h - 1, bottom + padding);
+
+        const trimW = right - left + 1;
+        const trimH = bottom - top + 1;
+
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = trimW;
+        tempCanvas.height = trimH;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(sourceCanvas, left, top, trimW, trimH, 0, 0, trimW, trimH);
+
+        return tempCanvas;
+      }
+
+      /**
+       * Exports and downloads the canvas content as a transparent PNG file.
+       */
+      function downloadTransparentPNG() {
+        renderCanvas();
+
+        const targetCanvas = trimWhitespaceToggle.checked
+          ? getTrimmedCanvas(canvas)
+          : canvas;
+
+        const dataUrl = targetCanvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 'akuru-arts-sinhala-text.png';
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        showToast(`Downloaded transparent PNG (${targetCanvas.width}×${targetCanvas.height} px)`);
+      }
+
+      function syncUIFromState() {
+        textInput.value = state.text;
+        fontSizeSlider.value = state.fontSize;
+        fontSizeValue.textContent = `${state.fontSize} px`;
+        lineHeightSlider.value = state.lineHeight;
+        lineHeightValue.textContent = `${Number(state.lineHeight).toFixed(2)}x`;
+
+        boldToggleBtn.className = state.isBold
+          ? 'py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition'
+          : 'py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition';
+
+        italicToggleBtn.className = state.isItalic
+          ? 'py-1.5 rounded-lg text-xs italic font-bold bg-amber-500 text-slate-950 transition'
+          : 'py-1.5 rounded-lg text-xs italic font-medium text-slate-400 hover:text-white transition';
+
+        textColorPicker.value = state.textColor;
+        textColorHex.textContent = state.textColor.toUpperCase();
+        useGradientToggle.checked = state.useGradient;
+        textColorSecondaryPicker.value = state.textColorSecondary;
+        textColorSecondaryHex.textContent = state.textColorSecondary.toUpperCase();
+        gradientDirectionSelect.value = state.gradientDirection;
+
+        if (state.useGradient) {
+          gradientColorContainer.classList.remove('opacity-40', 'pointer-events-none');
+        } else {
+          gradientColorContainer.classList.add('opacity-40', 'pointer-events-none');
+        }
+
+        strokeColorPicker.value = state.strokeColor;
+        strokeColorHex.textContent = state.strokeColor.toUpperCase();
+        strokeWidthSlider.value = state.strokeWidth;
+        strokeWidthValue.textContent = `${state.strokeWidth} px`;
+
+        shadowColorPicker.value = state.shadowColor;
+        shadowColorHex.textContent = state.shadowColor.toUpperCase();
+        shadowBlurSlider.value = state.shadowBlur;
+        shadowBlurValue.textContent = `${state.shadowBlur} px`;
+        shadowOffsetXSlider.value = state.shadowOffsetX;
+        shadowOffsetXValue.textContent = `${state.shadowOffsetX} px`;
+        shadowOffsetYSlider.value = state.shadowOffsetY;
+        shadowOffsetYValue.textContent = `${state.shadowOffsetY} px`;
+
+        document.querySelectorAll('.align-btn').forEach((btn) => {
+          if (btn.dataset.align === state.textAlign) {
+            btn.className = 'align-btn py-1.5 rounded-lg text-xs font-medium bg-amber-500 text-slate-950 transition flex justify-center items-center';
+          } else {
+            btn.className = 'align-btn py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition flex justify-center items-center';
+          }
+        });
+      }
+
+      // Pin / Unpin Top Preview Toggle
+      togglePinBtn.addEventListener('click', () => {
+        state.isPinned = !state.isPinned;
+        if (state.isPinned) {
+          topPreviewSection.classList.add('sticky', 'top-0');
+          pinText.textContent = 'Pinned at Top';
+          togglePinBtn.className = 'px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/25 transition flex items-center gap-1';
+        } else {
+          topPreviewSection.classList.remove('sticky', 'top-0');
+          pinText.textContent = 'Unpinned';
+          togglePinBtn.className = 'px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-800 text-slate-400 border border-slate-700 hover:text-white transition flex items-center gap-1';
+        }
+      });
+
+      // Text Input & Quick Phrase Listeners
+      textInput.addEventListener('input', (e) => {
+        state.text = e.target.value;
+        renderCanvas();
+      });
+
+      clearTextBtn.addEventListener('click', () => {
+        state.text = '';
+        textInput.value = '';
+        textInput.focus();
+        renderCanvas();
+      });
+
+      document.querySelectorAll('.phrase-chip').forEach((chip) => {
+        chip.addEventListener('click', () => {
+          state.text = chip.dataset.phrase;
+          textInput.value = state.text;
+          renderCanvas();
+        });
+      });
+
+      // Font Selector & Style Toggles
+      fontSelector.addEventListener('change', async (e) => {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        state.fontFamily = e.target.value;
+        state.isCondensed = selectedOption.dataset.condensed === 'true';
+        if (selectedOption.dataset.weight) {
+          state.fontWeight = selectedOption.dataset.weight;
+          state.isBold = Number(state.fontWeight) >= 600;
+        }
+        syncUIFromState();
+
+        if (document.fonts && document.fonts.load) {
+          try {
+            await document.fonts.load(`${state.fontWeight} ${state.fontSize}px ${state.fontFamily}`, state.text || 'අකුරු');
+          } catch (_) {}
+        }
+        renderCanvas();
+      });
+
+      boldToggleBtn.addEventListener('click', () => {
+        state.isBold = !state.isBold;
+        if (state.isBold && Number(state.fontWeight) < 600) {
+          state.fontWeight = '700';
+        }
+        syncUIFromState();
+        renderCanvas();
+      });
+
+      italicToggleBtn.addEventListener('click', () => {
+        state.isItalic = !state.isItalic;
+        syncUIFromState();
+        renderCanvas();
+      });
+
+      document.querySelectorAll('.align-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.textAlign = btn.dataset.align;
+          syncUIFromState();
+          renderCanvas();
+        });
+      });
+
+      // Font Size & Line Height Sliders
+      fontSizeSlider.addEventListener('input', (e) => {
+        state.fontSize = Number(e.target.value);
+        fontSizeValue.textContent = `${state.fontSize} px`;
+        renderCanvas();
+      });
+
+      lineHeightSlider.addEventListener('input', (e) => {
+        state.lineHeight = Number(e.target.value);
+        lineHeightValue.textContent = `${state.lineHeight.toFixed(2)}x`;
+        renderCanvas();
+      });
+
+      // Color & Gradient Controls
+      textColorPicker.addEventListener('input', (e) => {
+        state.textColor = e.target.value;
+        textColorHex.textContent = state.textColor.toUpperCase();
+        renderCanvas();
+      });
+
+      useGradientToggle.addEventListener('change', (e) => {
+        state.useGradient = e.target.checked;
+        syncUIFromState();
+        renderCanvas();
+      });
+
+      textColorSecondaryPicker.addEventListener('input', (e) => {
+        state.textColorSecondary = e.target.value;
+        textColorSecondaryHex.textContent = state.textColorSecondary.toUpperCase();
+        renderCanvas();
+      });
+
+      gradientDirectionSelect.addEventListener('change', (e) => {
+        state.gradientDirection = e.target.value;
+        renderCanvas();
+      });
+
+      document.querySelectorAll('.color-swatch').forEach((swatch) => {
+        swatch.addEventListener('click', () => {
+          state.textColor = swatch.dataset.color;
+          syncUIFromState();
+          renderCanvas();
+        });
+      });
+
+      // Outline Controls
+      strokeColorPicker.addEventListener('input', (e) => {
+        state.strokeColor = e.target.value;
+        strokeColorHex.textContent = state.strokeColor.toUpperCase();
+        renderCanvas();
+      });
+
+      strokeWidthSlider.addEventListener('input', (e) => {
+        state.strokeWidth = Number(e.target.value);
+        strokeWidthValue.textContent = `${state.strokeWidth} px`;
+        renderCanvas();
+      });
+
+      // Shadow Controls
+      shadowColorPicker.addEventListener('input', (e) => {
+        state.shadowColor = e.target.value;
+        shadowColorHex.textContent = state.shadowColor.toUpperCase();
+        renderCanvas();
+      });
+
+      shadowBlurSlider.addEventListener('input', (e) => {
+        state.shadowBlur = Number(e.target.value);
+        shadowBlurValue.textContent = `${state.shadowBlur} px`;
+        renderCanvas();
+      });
+
+      shadowOffsetXSlider.addEventListener('input', (e) => {
+        state.shadowOffsetX = Number(e.target.value);
+        shadowOffsetXValue.textContent = `${state.shadowOffsetX} px`;
+        renderCanvas();
+      });
+
+      shadowOffsetYSlider.addEventListener('input', (e) => {
+        state.shadowOffsetY = Number(e.target.value);
+        shadowOffsetYValue.textContent = `${state.shadowOffsetY} px`;
+        renderCanvas();
+      });
+
+      zeroShadowBtn.addEventListener('click', () => {
+        state.shadowBlur = 0;
+        state.shadowOffsetX = 0;
+        state.shadowOffsetY = 0;
+        syncUIFromState();
+        renderCanvas();
+      });
+
+      // Style Presets
+      const presets = {
+        maharajaBus: {
+          textColor: '#fde047',
+          useGradient: true,
+          textColorSecondary: '#ea580c',
+          gradientDirection: 'vertical',
+          strokeColor: '#451a03',
+          strokeWidth: 8,
+          shadowColor: '#000000',
+          shadowBlur: 18,
+          shadowOffsetX: 4,
+          shadowOffsetY: 9
+        },
+        stickerPop: {
+          textColor: '#fb7185',
+          useGradient: false,
+          textColorSecondary: '#f43f5e',
+          strokeColor: '#ffffff',
+          strokeWidth: 12,
+          shadowColor: '#0f172a',
+          shadowBlur: 0,
+          shadowOffsetX: 6,
+          shadowOffsetY: 8
+        },
+        neonCyber: {
+          textColor: '#e0f2fe',
+          useGradient: false,
+          textColorSecondary: '#38bdf8',
+          strokeColor: '#0284c7',
+          strokeWidth: 3.5,
+          shadowColor: '#0ea5e9',
+          shadowBlur: 35,
+          shadowOffsetX: 0,
+          shadowOffsetY: 0
+        },
+        leylandFire: {
+          textColor: '#fef08a',
+          useGradient: true,
+          textColorSecondary: '#dc2626',
+          gradientDirection: 'vertical',
+          strokeColor: '#1e1b4b',
+          strokeWidth: 9,
+          shadowColor: '#f97316',
+          shadowBlur: 22,
+          shadowOffsetX: 0,
+          shadowOffsetY: 8
+        },
+        emeraldGlow: {
+          textColor: '#6ee7b7',
+          useGradient: true,
+          textColorSecondary: '#059669',
+          gradientDirection: 'vertical',
+          strokeColor: '#064e3b',
+          strokeWidth: 7,
+          shadowColor: '#10b981',
+          shadowBlur: 20,
+          shadowOffsetX: 0,
+          shadowOffsetY: 6
+        },
+        classicWhite: {
+          textColor: '#ffffff',
+          useGradient: false,
+          textColorSecondary: '#cbd5e1',
+          strokeColor: '#0f172a',
+          strokeWidth: 6,
+          shadowColor: '#000000',
+          shadowBlur: 10,
+          shadowOffsetX: 3,
+          shadowOffsetY: 5
+        }
+      };
+
+      document.querySelectorAll('.preset-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const preset = presets[btn.dataset.preset];
+          if (!preset) return;
+          Object.assign(state, preset);
+          syncUIFromState();
+          renderCanvas();
+        });
+      });
+
+      // Preview Backdrop Switcher (CSS only)
+      document.querySelectorAll('.backdrop-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const targetClass = btn.dataset.backdrop;
+          canvasBackdropWrapper.classList.remove('checkerboard-dark', 'checkerboard-light', 'backdrop-midnight');
+          canvasBackdropWrapper.classList.add(targetClass);
+
+          document.querySelectorAll('.backdrop-btn').forEach((b) => {
+            if (b === btn) {
+              b.className = 'backdrop-btn px-2 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-amber-300 transition';
+            } else {
+              b.className = 'backdrop-btn px-2 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-white transition';
+            }
+          });
+        });
+      });
+
+      // Canvas Resolution Change
+      canvasSizeSelect.addEventListener('change', (e) => {
+        const [w, h] = e.target.value.split('x').map(Number);
+        canvas.width = w;
+        canvas.height = h;
+        canvasResolutionBadge.textContent = `100% Transparent PNG • ${w}×${h}`;
+        renderCanvas();
+      });
+
+      // Reset All Settings
+      resetBtn.addEventListener('click', () => {
+        Object.assign(state, {
+          text: 'අකුරු ආට්ස්\nශ්‍රී ලංකා',
+          fontFamily: "'Abhaya Libre', serif",
+          fontWeight: '800',
+          isBold: true,
+          isItalic: false,
+          isCondensed: false,
+          fontSize: 110,
+          lineHeight: 1.2,
+          textAlign: 'center',
+          textColor: '#fde047',
+          useGradient: true,
+          textColorSecondary: '#f97316',
+          gradientDirection: 'vertical',
+          strokeColor: '#451a03',
+          strokeWidth: 8,
+          shadowColor: '#000000',
+          shadowBlur: 16,
+          shadowOffsetX: 4,
+          shadowOffsetY: 8
+        });
+        fontSelector.selectedIndex = 0;
+        syncUIFromState();
+        renderCanvas();
+        showToast('Settings reset to default.');
+      });
+
+      // Download Buttons
+      downloadBtnTop.addEventListener('click', downloadTransparentPNG);
+      downloadBtnBottom.addEventListener('click', downloadTransparentPNG);
+
+      // Initialize UI & Preload Fonts
+      syncUIFromState();
+      ensureFontsLoaded();
+    })();
+  </script>
+</body>
+</html>
